@@ -1,14 +1,14 @@
 import axios from 'axios'
 
-const baseUrl = "http://localhost:3001/persons"
+const baseUrl = "/api/persons"
 
 const create = (contact) => {
-    console.log(`${baseUrl}`);
     const request = axios.post(`${baseUrl}`, contact)
     return request.then(response => response.data)
 }
 
 const destroy = (id) => {
+    console.log(`${baseUrl}/${id}`);
     const request = axios.delete(`${baseUrl}/${id}`)
     return request.then(response => response.data)
 }

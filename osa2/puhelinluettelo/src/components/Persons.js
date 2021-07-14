@@ -11,7 +11,7 @@ const Persons = ({ persons, filter, handleDelete }) => {
                 return ( 
                     <div>
                     <Contact key={person.name} name={person.name} number={person.number}/>
-                    <Delete key={`${person.name}Btn`} handleDelet={() => handleDelete(person.id)}></Delete>
+                    <Delete key={`${person.name}Btn`} handleDelete={() => handleDelete(person.id)}></Delete>
                     </div>
                 )
             else return <></>
