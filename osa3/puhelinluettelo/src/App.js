@@ -4,7 +4,7 @@ import PersonForm from './components/PersonForm'
 import Filter from './components/Filter'
 import Persons from './components/Persons'
 import Notification from './components/Notification'
-import ContactsService from './services/contacts'
+import PersonsService from './services/persons'
 
 const App = () => {
   const [ persons, setPersons ] = useState([])
@@ -30,7 +30,7 @@ const App = () => {
       if (window.confirm(`${newName} is already added to phonebook, replace the old number with a new one?`)){
         const updated = {...persons.find(p => p.name === newName), number: newNumber}
         console.log(updated);
-        ContactsService
+        PersonsService
             .update(updated)
             .then(response => {
                 console.log(response);
@@ -54,7 +54,7 @@ const App = () => {
     }
     const id = persons[persons.length-1].id + 1
     const newContact = {name: newName, number: newNumber, id: id}
-    ContactsService
+    PersonsService
         .create(newContact)
         .then((response) => {
           console.log("create response:",response);
@@ -66,7 +66,13 @@ const App = () => {
               setNotification(null)
           }, 5000)
         })
-        .catch(err => console.log(err))
+        .catch(error => {
+          console.log(error.response.data)
+          setErrorMessage(error.response.data.error)
+          setTimeout(() => {
+            setErrorMessage(null)
+        }, 5000)
+        })
   }
 
   const deletePerson = (id) => {
@@ -74,7 +80,7 @@ const App = () => {
       const tbd = persons.find(p => p.id === id)
       console.log(tbd);
       if (window.confirm(`Delete ${tbd.name}?`)){
-        ContactsService
+        PersonsService
           .destroy(id)
           .then(data => {
               console.log(`Deleted id ${id}`);

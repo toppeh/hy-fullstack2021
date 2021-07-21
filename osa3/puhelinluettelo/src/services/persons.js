@@ -23,4 +23,4 @@ const update = (contact) => {
 
 
 
-export default {create, destroy, update}
+export default { create, destroy, update }

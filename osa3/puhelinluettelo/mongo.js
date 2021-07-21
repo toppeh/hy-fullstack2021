@@ -18,11 +18,11 @@ const url = `mongodb+srv://fullstack:${password}@cluster0.azjwj.mongodb.net/phon
 
 mongoose.connect(url, { useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true })
 
-if (process.argv.length==6){
+if (process.argv.length==5){
     const person = new Person({
         name: process.argv[3],
         number: process.argv[4],
-        id: process.argv[5]
+
     })
     person.save().then(res => {
         console.log(`added ${person.name} number ${person.number} to phonebook`);
