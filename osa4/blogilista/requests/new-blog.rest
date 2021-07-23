@@ -1,0 +1,9 @@
+POST http://localhost:3003/api/blogs
+Content-Type: application/json
+
+{
+  "title": "webbidevaus on kivaa :))))))) vol2",
+  "author": "by yours truly",
+  "url": "http://www.blogs.fi/haha_yes.exe",
+  "likes": 234234
+}

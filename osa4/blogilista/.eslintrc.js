@@ -4,6 +4,7 @@ module.exports = {
     commonjs: true,
     es2021: true,
     node: true,
+    jest: true,
   },
   extends: [
     'plugin:react/recommended',
@@ -20,5 +21,12 @@ module.exports = {
   ],
   rules: {
     'no-console': 0,
+    indent: ['error',
+      2,
+    ],
+    semi: [
+      'error',
+      'never',
+    ],
   },
-};
+}
