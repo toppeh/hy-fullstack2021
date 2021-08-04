@@ -1,15 +1,20 @@
 /*eslint-disable */
 const mongoose = require('mongoose');
 const supertest = require('supertest');
+const jwt = require('jsonwebtoken')
+const bcrypt = require('bcrypt')
 const app = require('../app');
 
 const api = supertest(app);
 const Blog = require('../models/blog');
+const User = require('../models/user')
 const helper = require('./test_helper');
 
 beforeEach(async () => {
   await Blog.deleteMany({});
   await Blog.insertMany(helper.biglist);
+  const userPromises = helper.userList.map(user => api.post('/api/users').send(user))
+  await Promise.all(userPromises)
 });
 
 test('blogs are returned as json', async () => {
@@ -26,11 +31,17 @@ test('get all blogs', async () => {
 
 test('check id-field name', async () => {
   const allBlogs = await helper.blogsInDb()
+
   expect(allBlogs[0].id).toBeDefined()
 })
 
 describe('adding blogs', () => {
   test('adding a new blog', async () => {
+    const response = await api.post('/api/login').send({
+      username: helper.userList[0].username,
+      password: helper.userList[0].password,
+    })
+    const token = response.body.token
     const newBlog = 
       { 
         title: "Poikamiehen herkkuruoat",
@@ -40,6 +51,7 @@ describe('adding blogs', () => {
       }
     await api.post('/api/blogs')
              .send(newBlog)
+             .set({ Authorization: `bearer ${token}` })
              .expect(201)
              .expect('Content-Type', /application\/json/)
 
@@ -50,20 +62,31 @@ describe('adding blogs', () => {
   })
 
   test('if no likes, set to zero', async () => {
+    const response = await api.post('/api/login').send({
+      username: helper.userList[0].username,
+      password: helper.userList[0].password,
+    })
+    const token = response.body.token
     const newBlog = 
     { 
       title: "Poikamiehen herkkuruoat",
       author: "Anonyymi",
       url: "https://poikamiehenherkkuruoat.tumblr.com/",
     }
-    const response = await api.post('/api/blogs')
+    const addedBlog = await api.post('/api/blogs')
                                .send(newBlog)
+                               .set({ Authorization: `bearer ${token}` })
                                .expect(201)
                                .expect('Content-Type', /application\/json/)
-    expect(response.body.likes).toBe(0)
+    expect(addedBlog.body.likes).toBe(0)
   })
 
   test('invalid parameters in adding a new blog', async () => {
+    const response = await api.post('/api/login').send({
+      username: helper.userList[0].username,
+      password: helper.userList[0].password,
+    })
+    const token = response.body.token
     const noTitle = 
     { 
       author: "Anonyymi",
@@ -71,6 +94,7 @@ describe('adding blogs', () => {
     }
     await api.post('/api/blogs')
              .send(noTitle)
+             .set({ Authorization: `bearer ${token}` })
              .expect(400)
     const noUrl = 
     {
@@ -79,6 +103,7 @@ describe('adding blogs', () => {
     }
     await api.post('/api/blogs')
              .send(noUrl)
+             .set({ Authorization: `bearer ${token}` })
              .expect(400)
     const noTitleAndUrl =
     {
@@ -87,7 +112,25 @@ describe('adding blogs', () => {
     }
     await api.post('/api/blogs')
              .send(noTitleAndUrl)
+             .set({ Authorization: `bearer ${token}` })
              .expect(400)
+  })
+
+  test('no token', async () => {
+    const newBlog = 
+      { 
+        title: "Poikamiehen herkkuruoat",
+        author: "Anonyymi",
+        url: "https://poikamiehenherkkuruoat.tumblr.com/",
+        likes: 24,
+      }
+    await api.post('/api/blogs')
+             .send(newBlog)
+             .expect(401)
+             .expect('Content-Type', /application\/json/)
+
+    const allBlogs = await helper.blogsInDb()
+    expect(allBlogs).toHaveLength(helper.biglist.length)
   })
 })
 

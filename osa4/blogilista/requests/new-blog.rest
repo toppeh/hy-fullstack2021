@@ -1,5 +1,6 @@
 POST http://localhost:3003/api/blogs
 Content-Type: application/json
+Authorization: earer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VybmFtZSI6InhkZGQiLCJpZCI6IjYxMGE4OWE0NjdlN2U5MWJmOGQ1ZjJlYiIsImlhdCI6MTYyODA4NjAzOX0.X3wsfqWV_akxMxPVCNOE09PXh8IhYDtmLg8wZsFDdPI
 
 {
   "title": "webbidevaus on kivaa :))))))) vol2",

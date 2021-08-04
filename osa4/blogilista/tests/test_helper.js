@@ -1,5 +1,6 @@
 /* eslint-disable */
 const Blog = require('../models/blog');
+const User = require('../models/user');
 
 const biglist = [
     {
@@ -41,10 +42,32 @@ const biglist = [
     }  
   ]
 
+const userList = [
+  {
+    username: "1337skyhopper",
+    name: "Erkki Esimerkki",
+    password: "awesome"
+  },
+  {
+    username: "Harmaakoira",
+    name: "Jori Koivu",
+    password: "veryawesome"
+  }
+]
 
 const blogsInDb = async () => {
   const blogs = await Blog.find({})
   return blogs.map(blog => blog.toJSON())
 }
 
-  module.exports = { biglist, blogsInDb }
+const usersInDb = async () => {
+  const users = await User.find({})
+  return users.map(user => user.toJSON())
+}
+
+const getFirstUser = async () => {
+  const users = await User.find({})
+  return users[0].toJSON()
+}
+
+module.exports = { biglist, userList, blogsInDb, usersInDb, getFirstUser }
