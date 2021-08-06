@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
 import LoginForm from './components/login'
@@ -6,21 +6,22 @@ import loginService from './services/login'
 import Logout from './components/logout'
 import BlogForm from './components/blogform'
 import Notification from './components/notification'
+import Togglable from './components/togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null) 
-  const [username, setUsername] = useState('')
-  const [password, setPassword] = useState('')
-  const [title, setTitle] = useState('')
-  const [author, setAuthor] = useState('')
-  const [url, setUrl] = useState('')
   const [errorMessage, setErrorMessage] = useState(null)
   const [notification, setNotification] = useState(null)
 
+  const blogFormRef = useRef()
+
   useEffect(() => {
-    blogService.getAll().then(blogs =>
+    blogService.getAll().then(blogs =>{
+      blogs = blogs.sort((a, b) => a.likes < b.likes )
       setBlogs( blogs )
+    }
+      
     )  
   }, [])
 
@@ -33,15 +34,10 @@ const App = () => {
     }
   }, [])
 
-  const handleLogin = async (event) => {
-    event.preventDefault()
+  const handleLogin = async (userLogin) => {
     try {      
-      const user = await loginService.login({        
-        username, password,      
-      })
+      const user = await loginService.login(userLogin)
       setUser(user)
-      setUsername('')      
-      setPassword('')
       blogService.setToken(user.token)
       window.localStorage.setItem('user', JSON.stringify(user))    
     } catch (exception) {      
@@ -59,36 +55,36 @@ const App = () => {
     window.localStorage.removeItem('user')
   }
 
-  const handleNewBlog = async (event) => {
-    event.preventDefault()
-    const toAdd = {
-      title: event.target.title.value,
-      author: event.target.author.value,
-      url: event.target.url.value,
-    }
-    const response = await blogService.addNew(toAdd)
+  const handleNewBlog = async (newBlog) => {
+    const response = await blogService.addNew(newBlog)
     if (response.status === 201) {
       const data = response.data
+      setBlogs(blogs.concat(data))
       setNotification(`A new blog ${data.title} by ${data.author} added`)
-          setTimeout(() => {
-              setNotification(null)
-          }, 5000)
+      setTimeout(() => {
+        setNotification(null)
+      }, 5000)
+      blogFormRef.current.toggleVisibility()
     }
-    setTitle('')
-    setAuthor('')
-    setUrl('')
+  }
+
+  const handleLikesIncrease = async (blog) => {
+    const response = await blogService.increaseLikes(blog)
+    //console.log(response.status);
+    console.log("response.data", response.data);
+    // päivitä blogs tilaa että likes piirretään uudelleen
+    /*const index = blogs.findIndex(b => b.id === blog.id)
+    blogs[index].likes = response.data.likes*/
+    const newBlogs = blogs.map(b => b.id !== blog.id ? b : {...b, likes: b.likes + 1})
+    newBlogs.sort((a, b) => a.likes < b.likes)
+    setBlogs(newBlogs)
   }
 
   if (user===null){
     return (
     <>
     <Notification message={errorMessage} className="error" />
-    <LoginForm handleLogin={handleLogin}
-                  username={username}
-                  setUsername={setUsername}
-                  password={password}
-                  setPassword={setPassword}
-                  />
+    <LoginForm handleLogin={handleLogin}/>
     </>)
   }
   return (
@@ -97,15 +93,11 @@ const App = () => {
       <Notification message={notification} className="notification" />
       <Notification message={errorMessage} className="error" />
       <p>{user.name} logged in <Logout handleLogout={handleLogout} /></p>
-
-      <BlogForm handleSubmit={handleNewBlog}
-                title={title} setTitle={setTitle}
-                author={author} setAuthor={setAuthor}
-                url={url} setUrl={setUrl}
-      />
-
+      <Togglable buttonLabel='new note' ref={blogFormRef}>
+        <BlogForm handleSubmit={handleNewBlog}/>
+      </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} />
+        <Blog key={blog.id} blog={blog} handleLikes={handleLikesIncrease} />
       )}
     </div>
   )

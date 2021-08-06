@@ -20,4 +20,17 @@ const addNew = async (toAdd) => {
   return response
 }
 
-export default { getAll, addNew, setToken }
+const increaseLikes = async (blog) => {
+  const url = `${baseUrl}/${blog.id}`
+  const updatedLikes = {
+    title: blog.title,
+    author: blog.author,
+    url: blog.url,
+    likes: blog.likes + 1,
+    user: blog.user.id
+  }
+  const response = await axios.put(url, updatedLikes)
+  return response
+}
+
+export default { getAll, addNew, setToken, increaseLikes }
