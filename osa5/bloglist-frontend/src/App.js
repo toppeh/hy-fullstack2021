@@ -70,14 +70,19 @@ const App = () => {
 
   const handleLikesIncrease = async (blog) => {
     const response = await blogService.increaseLikes(blog)
-    //console.log(response.status);
-    console.log("response.data", response.data);
-    // päivitä blogs tilaa että likes piirretään uudelleen
-    /*const index = blogs.findIndex(b => b.id === blog.id)
-    blogs[index].likes = response.data.likes*/
-    const newBlogs = blogs.map(b => b.id !== blog.id ? b : {...b, likes: b.likes + 1})
-    newBlogs.sort((a, b) => a.likes < b.likes)
-    setBlogs(newBlogs)
+    if (response.status === 200){
+      const newBlogs = blogs.map(b => b.id !== blog.id ? b : {...b, likes: b.likes + 1})
+      newBlogs.sort((a, b) => a.likes < b.likes)
+      setBlogs(newBlogs)
+    }
+  }
+
+  const handleDeleteBlog = async (blog) => {
+    const response = await blogService.deleteBlog(blog.id)
+    if (response.status === 204) {
+      const newBlogs = blogs.filter(b => b.id !== blog.id)
+      setBlogs(newBlogs)
+    }
   }
 
   if (user===null){
@@ -97,7 +102,11 @@ const App = () => {
         <BlogForm handleSubmit={handleNewBlog}/>
       </Togglable>
       {blogs.map(blog =>
-        <Blog key={blog.id} blog={blog} handleLikes={handleLikesIncrease} />
+        <Blog key={blog.id}
+              blog={blog}
+              handleLikes={handleLikesIncrease}
+              currentUser={user.name}
+              handleDelete={handleDeleteBlog} />
       )}
     </div>
   )
