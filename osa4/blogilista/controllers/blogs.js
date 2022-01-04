@@ -13,6 +13,7 @@ blogsRouter.get('/', async (request, response) => {
 
 blogsRouter.post('/', middleware.userExtractor, async (request, response) => {
   const { body, user } = request
+  // if (!user) return response.status(401)
   const blog = new Blog({
     title: body.title,
     author: body.author,

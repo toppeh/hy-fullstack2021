@@ -1,12 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import Blog from './components/Blog'
 import blogService from './services/blogs'
-import LoginForm from './components/login'
+import LoginForm from './components/Login'
 import loginService from './services/login'
-import Logout from './components/logout'
-import BlogForm from './components/blogform'
-import Notification from './components/notification'
-import Togglable from './components/togglable'
+import Logout from './components/Logout'
+import BlogForm from './components/Blogform'
+import Notification from './components/Notification'
+import Togglable from './components/Togglable'
 
 const App = () => {
   const [blogs, setBlogs] = useState([])
@@ -66,6 +66,7 @@ const App = () => {
       }, 5000)
       blogFormRef.current.toggleVisibility()
     }
+    
   }
 
   const handleLikesIncrease = async (blog) => {
@@ -98,18 +99,20 @@ const App = () => {
       <Notification message={notification} className="notification" />
       <Notification message={errorMessage} className="error" />
       <p>{user.name} logged in <Logout handleLogout={handleLogout} /></p>
-      <Togglable buttonLabel='new note' ref={blogFormRef}>
+      <Togglable buttonLabel='new blog' ref={blogFormRef}>
         <BlogForm handleSubmit={handleNewBlog}/>
       </Togglable>
-      {blogs.map(blog =>
-        <Blog key={blog.id}
-              blog={blog}
-              handleLikes={handleLikesIncrease}
-              currentUser={user.name}
-              handleDelete={handleDeleteBlog} />
-      )}
+      <div id='bloglist'>
+        {blogs.map(blog =>
+          <Blog key={blog.id}
+                blog={blog}
+                handleLikes={handleLikesIncrease}
+                currentUser={user.name}
+                handleDelete={handleDeleteBlog} />
+        )}
+      </div>
     </div>
   )
 }
 
-export default App
+export default App 

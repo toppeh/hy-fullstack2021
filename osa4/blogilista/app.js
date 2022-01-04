@@ -6,6 +6,7 @@ const config = require('./utils/config')
 const blogsRouter = require('./controllers/blogs')
 const usersRouter = require('./controllers/users')
 const loginRouter = require('./controllers/login')
+const resetRouter = require('./controllers/reset')
 const logger = require('./utils/logger')
 const middleware = require('./utils/middleware')
 
@@ -15,6 +16,10 @@ logger.info('connecting to mongodb')
 mongoose.connect(config.MONGODB_URI, {
   useNewUrlParser: true, useUnifiedTopology: true, useFindAndModify: false, useCreateIndex: true,
 }).then(() => logger.info('connected to mongodb'))
+
+if (process.env.NODE_ENV === 'test') {
+  app.use('/api/testing', resetRouter)
+}
 
 app.use(cors())
 app.use(express.json())
