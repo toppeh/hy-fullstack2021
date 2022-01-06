@@ -18,7 +18,7 @@ const AnecdoteList = () => {
   const vote = async (anecdote) => {
     console.log('vote', anecdote.id)
     dispatch(addVote(anecdote.id))
-    dispatch(setNotification(`you voted \'${anecdote.content}\'`, 10))
+    dispatch(setNotification(`you voted \'${anecdote.content}\'`, 5))
     /*dispatch(setNotification(`you voted \'${anecdotes.find(a => a.id === id).content}\'`))
     setTimeout(() => {
       dispatch(resetNotification())

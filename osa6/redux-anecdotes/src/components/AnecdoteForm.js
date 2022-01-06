@@ -18,7 +18,7 @@ const AnecdoteForm = ({ addAnecdote, setNotification }) => {
       dispatch(resetNotification())
     }, 5000)*/
     addAnecdote(anecdote)
-    setNotification(`you added \'${anecdote}\'`, 10)
+    setNotification(`you added \'${anecdote}\'`, 5)
   }
 
   return (
