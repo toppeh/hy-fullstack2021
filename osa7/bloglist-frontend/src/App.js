@@ -9,74 +9,64 @@ import BlogForm from './components/Blogform'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
-import { initBlogs, addBlog } from './reducers/blogReducer'
+import { initBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
+import { login, logout } from './reducers/userReducer'
 
 const App = () => {
-  const [user, setUser] = useState(null) 
-
   const dispatch = useDispatch()
   const blogs = useSelector(state => state.blogs)
+  const user = useSelector(state => state.user)
   const blogFormRef = useRef()
 
   useEffect(() => {
-    blogService.getAll().then(blogs =>{
-      blogs = blogs.sort((a, b) => a.likes < b.likes )
-      dispatch(initBlogs(blogs))
-    })  
-  }, [])
+    dispatch(initBlogs())  
+  }, [dispatch])
 
+  
   useEffect(() => {
-    const storedUser = window.localStorage.getItem('user')
-    if (storedUser) {
-      const user = JSON.parse(storedUser)
-      setUser(user)
-      blogService.setToken(user.token)
-    }
-  }, [])
+    const storedUser = JSON.parse(window.localStorage.getItem('user'))
+    dispatch(login(storedUser))
+  },[dispatch])
 
   const handleLogin = async (userLogin) => {
     try {      
       const user = await loginService.login(userLogin)
-      setUser(user)
-      blogService.setToken(user.token)
-      window.localStorage.setItem('user', JSON.stringify(user))    
-    } catch (exception) {
+      dispatch(login(user))
+    } 
+    catch (exception) {
       dispatch(setNotification(`wrong username or password`, 'error', 5))      
       console.log(exception)
     }  
   }
 
   const handleLogout = (event) => {
-    setUser(null)
-    blogService.setToken(null)
-    window.localStorage.removeItem('user')
+    dispatch(logout())
+    dispatch(setNotification('logged out', 'notification', 5))
   }
 
   const handleNewBlog = async (newBlog) => {
-    const response = await blogService.addNew(newBlog)
-    if (response.status === 201) {
-      const data = response.data
-      dispatch(addBlog(data))
-      dispatch(setNotification(`A new blog '${data.title}' by ${data.author} added`, 'notification', 5))
-      blogFormRef.current.toggleVisibility()
+    try {
+        dispatch(addBlog(newBlog))
+        dispatch(setNotification(`A new blog '${newBlog.title}' by ${newBlog.author} added`, 'notification', 5))
+        blogFormRef.current.toggleVisibility()
+    } catch (e) {
+      console.log(e);
     }
-    
   }
 
   const handleLikesIncrease = async (blog) => {
-    const response = await blogService.increaseLikes(blog)
-    if (response.status === 200){
-      const newBlogs = blogs.map(b => b.id !== blog.id ? b : {...b, likes: b.likes + 1})
-      newBlogs.sort((a, b) => a.likes < b.likes)
-      //dispatch(addBlog(response.data))//setBlogs(newBlogs)
+    try {
+      dispatch(likeBlog(blog))
+    } catch (e) {
+      console.log(e);
     }
   }
 
   const handleDeleteBlog = async (blog) => {
-    const response = await blogService.deleteBlog(blog.id)
-    if (response.status === 204) {
-      const newBlogs = blogs.filter(b => b.id !== blog.id)
-      //setBlogs(newBlogs)
+    try {
+      dispatch(deleteBlog(blog.id))
+    } catch (e){
+      console.log(e);
     }
   }
 
