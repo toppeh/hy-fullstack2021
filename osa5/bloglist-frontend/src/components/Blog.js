@@ -6,7 +6,7 @@ const Blog = ({blog, handleLikes, currentUser, handleDelete}) => {
   const [ user, setUser ] = useState({})
 
   useEffect(() => {
-    setUser(blog.user)
+    setUser(currentUser)
   }, [])
 
   const blogStyle = {

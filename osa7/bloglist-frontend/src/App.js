@@ -22,9 +22,7 @@ const App = () => {
     blogService.getAll().then(blogs =>{
       blogs = blogs.sort((a, b) => a.likes < b.likes )
       setBlogs( blogs )
-    }
-      
-    )  
+    })  
   }, [])
 
   useEffect(() => {
@@ -102,7 +100,7 @@ const App = () => {
           <Blog key={blog.id}
                 blog={blog}
                 handleLikes={handleLikesIncrease}
-                currentUser={user.name}
+                currentUser={user}
                 handleDelete={handleDeleteBlog} />
         )}
       </div>
