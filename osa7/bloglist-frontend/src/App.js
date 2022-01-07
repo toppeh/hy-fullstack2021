@@ -9,19 +9,19 @@ import BlogForm from './components/Blogform'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
+import { initBlogs, addBlog } from './reducers/blogReducer'
 
 const App = () => {
-  const [blogs, setBlogs] = useState([])
   const [user, setUser] = useState(null) 
 
   const dispatch = useDispatch()
-
+  const blogs = useSelector(state => state.blogs)
   const blogFormRef = useRef()
 
   useEffect(() => {
     blogService.getAll().then(blogs =>{
       blogs = blogs.sort((a, b) => a.likes < b.likes )
-      setBlogs( blogs )
+      dispatch(initBlogs(blogs))
     })  
   }, [])
 
@@ -56,8 +56,8 @@ const App = () => {
     const response = await blogService.addNew(newBlog)
     if (response.status === 201) {
       const data = response.data
-      setBlogs(blogs.concat(data))
-      dispatch(setNotification(`A new blog \'${data.title}\' by ${data.author} added`, 'notification', 5))
+      dispatch(addBlog(data))
+      dispatch(setNotification(`A new blog '${data.title}' by ${data.author} added`, 'notification', 5))
       blogFormRef.current.toggleVisibility()
     }
     
@@ -68,7 +68,7 @@ const App = () => {
     if (response.status === 200){
       const newBlogs = blogs.map(b => b.id !== blog.id ? b : {...b, likes: b.likes + 1})
       newBlogs.sort((a, b) => a.likes < b.likes)
-      setBlogs(newBlogs)
+      //dispatch(addBlog(response.data))//setBlogs(newBlogs)
     }
   }
 
@@ -76,7 +76,7 @@ const App = () => {
     const response = await blogService.deleteBlog(blog.id)
     if (response.status === 204) {
       const newBlogs = blogs.filter(b => b.id !== blog.id)
-      setBlogs(newBlogs)
+      //setBlogs(newBlogs)
     }
   }
 

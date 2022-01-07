@@ -17,7 +17,6 @@ const addNew = async (toAdd) => {
     headers: { Authorization: token}
   }
   const response = await axios.post(baseUrl, toAdd, config)
-  console.log(response);
   return response
 }
 

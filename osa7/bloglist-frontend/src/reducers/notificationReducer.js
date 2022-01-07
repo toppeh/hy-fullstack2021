@@ -1,6 +1,6 @@
 const initialState = {
   content: '',
-  class: 'notification',
+  className: 'notification',
   id: null
 }
 
