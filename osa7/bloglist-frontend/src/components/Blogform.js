@@ -1,5 +1,4 @@
 import React, { useState } from 'react'
-import PropTypes from 'prop-types'
 import { useDispatch } from 'react-redux'
 import { addBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
@@ -57,10 +56,6 @@ const BlogForm = ({ toggleVisibility }) => {
       <button type='submit'>create</button>
     </form>
   )
-}
-
-BlogForm.propTypes = {
-  handleSubmit: PropTypes.func.isRequired
 }
 
 export default BlogForm

@@ -1,14 +1,26 @@
 import React from 'react'
 import { Link } from 'react-router-dom'
+import { useSelector, useDispatch } from 'react-redux'
+import Logout from './Logout'
+import { logout } from '../reducers/userReducer'
 
 const Menu = () => {
+  const user = useSelector(state => state.user)
   const padding = {
-    paddingRight: 5
+    paddingRight: 10
   }
+  const style = {
+    background: '#b0afac',
+    paddingTop: 15,
+    paddingLeft: 5,
+    paddingBottom: 5
+  }
+
   return (
-    <div>
+    <div style={style}>
       <Link style={padding} to='/'>blogs</Link>
       <Link style={padding} to='/users'>users</Link>
+      {user.name} logged in <Logout></Logout>
     </div>
   )
 }

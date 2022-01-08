@@ -18,12 +18,28 @@ const reducer = (state=[], action) => {
       return newState
     
     case 'NEW_BLOG':
-      // backend is a bit wonky and doesnt send the whole user on new blog creation
+      // backend is a bit wonky and doesn't send the whole user on new blog creation
       const id = action.data.user
+      const index = state.find(el => el.user.id === id) 
+      if (index === -1){
+        return state.concat({
+          user: action.data.user,
+          writtenBlogs: [action.data]
+        })
+      }
       return state.map(user => user.user.id !== id ? user : {
         ...user,
         writtenBlogs: user.writtenBlogs.concat(action.data)})
-
+    
+    case 'DELETE':
+      console.log(action);
+      return state.map(el => {
+        return {
+          user: el.user,
+          writtenBlogs: el.writtenBlogs.filter(blog => blog.id !== action.id)
+        }
+    })
+    
     default:
       return state
   }

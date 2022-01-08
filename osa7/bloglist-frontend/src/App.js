@@ -1,7 +1,6 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useEffect, useRef } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
-import blogService from './services/blogs'
 import LoginForm from './components/Login'
 import loginService from './services/login'
 import Logout from './components/Logout'
@@ -9,15 +8,13 @@ import BlogForm from './components/Blogform'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
-import { initBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
+import { initBlogs } from './reducers/blogReducer'
 import { login, logout } from './reducers/userReducer'
 import {
-  BrowserRouter as Router,
+  Link,
   Switch,
   Route,
-  Link,
-  useRouteMatch,
-  useHistory } from 'react-router-dom'
+  useRouteMatch} from 'react-router-dom'
 import Menu from './components/Menu'
 import UserInfo from './components/UserInfo'
 import User from './components/User'
@@ -31,12 +28,14 @@ const App = () => {
   const user = useSelector(state => state.user)
   const stats = useSelector(state => state.stats)
   const blogFormRef = useRef()
-  const match = useRouteMatch('/users/:id')
-  console.log('MATCH:', match);
-  const userMatch = match 
-    ? stats.find(el => el.user.id === match.params.id) 
+  const usersRouteMatch = useRouteMatch('/users/:id')
+  const blogsRouteMatch = useRouteMatch('/blogs/:id')
+  const userMatch = usersRouteMatch 
+    ? stats.find(el => el.user.id === usersRouteMatch.params.id) 
     : null
-  console.log("USER_MATCH:", userMatch);
+  const blogMatch = blogsRouteMatch
+    ? blogs.find(blog => blog.id === blogsRouteMatch.params.id)
+    : null
 
   useEffect(() => {
     const storedUser = JSON.parse(window.localStorage.getItem('user'))
@@ -73,12 +72,10 @@ const App = () => {
       </>)
   }
   return (
-    
       <div>
-        <h2>blogs</h2>
-        <Notification />
-        <p>{user.name} logged in <Logout handleLogout={handleLogout} /></p>
         <Menu />
+        <h2>blog app</h2>
+        <Notification />
         <Switch>
           <Route path='/users/:id'>
             <User data={userMatch}/>
@@ -86,15 +83,18 @@ const App = () => {
           <Route path='/users'>
             <UserInfo />
           </Route>
+          <Route path='/blogs/:id'>
+            <Blog blog={blogMatch}/>
+          </Route>
           <Route path='/'>
             <Togglable buttonLabel='new blog' ref={blogFormRef}>
               <BlogForm toggleVisibility={toggleVisibility}/>
             </Togglable>
-            <div id='bloglist'>
               {blogs.map(blog =>
-                <Blog key={blog.id} blog={blog}/>)
+                <div key={blog.id} className='blogList'>
+                  <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
+               </div>)
               }
-            </div>
           </Route>
         </Switch>
       </div>
