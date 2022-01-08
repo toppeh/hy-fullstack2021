@@ -3,13 +3,12 @@ import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import LoginForm from './components/Login'
 import loginService from './services/login'
-import Logout from './components/Logout'
 import BlogForm from './components/Blogform'
 import Notification from './components/Notification'
 import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
 import { initBlogs } from './reducers/blogReducer'
-import { login, logout } from './reducers/userReducer'
+import { login } from './reducers/userReducer'
 import {
   Link,
   Switch,
@@ -53,11 +52,6 @@ const App = () => {
       dispatch(setNotification(`wrong username or password`, 'error', 5))      
       console.log(exception)
     }  
-  }
-
-  const handleLogout = (event) => {
-    dispatch(logout())
-    dispatch(setNotification('logged out', 'notification', 5))
   }
 
   const toggleVisibility = async () => {

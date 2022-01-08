@@ -1,8 +1,9 @@
-import React, { useEffect, useState } from 'react'
+import React, { useEffect } from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { likeBlog, deleteBlog } from '../reducers/blogReducer'
 import { useHistory } from "react-router-dom"
+import Comments from './Comments'
 
 const Blog = ({blog}) => {
   const dispatch = useDispatch()
@@ -51,6 +52,7 @@ const Blog = ({blog}) => {
           <div className='likes'>{blog.likes} likes<button className='likeBtn' onClick={addLike}>like</button></div>
           <div>added by {blog.user.name}</div>
           <button style={buttonStyle} onClick={removeBlog}>remove</button>
+          <Comments blogId={blog.id}/>
       </div>
     )
   }
@@ -60,6 +62,7 @@ const Blog = ({blog}) => {
       <a href={blog.url}>{blog.url}</a>
       <div className='likes'>{blog.likes} likes<button className='likeBtn' onClick={addLike}>like</button></div>
       <div>added by {blog.user.name}</div>
+      <Comments blogId={blog.id}/>
     </div>
   )
 }
