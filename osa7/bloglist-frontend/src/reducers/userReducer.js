@@ -1,5 +1,3 @@
-import loginService from "../services/login"
-
 export const login = (user) => {
   return {
     type: 'LOGIN',

@@ -11,22 +11,39 @@ import Togglable from './components/Togglable'
 import { setNotification } from './reducers/notificationReducer'
 import { initBlogs, addBlog, likeBlog, deleteBlog } from './reducers/blogReducer'
 import { login, logout } from './reducers/userReducer'
+import {
+  BrowserRouter as Router,
+  Switch,
+  Route,
+  Link,
+  useRouteMatch,
+  useHistory } from 'react-router-dom'
+import Menu from './components/Menu'
+import UserInfo from './components/UserInfo'
+import User from './components/User'
 
 const App = () => {
   const dispatch = useDispatch()
-  const blogs = useSelector(state => state.blogs)
+  const blogs = useSelector(state => {
+    let blogsCopy = state.blogs
+    return blogsCopy.sort((blogA, blogB) => blogA.likes < blogB.likes)
+  })
   const user = useSelector(state => state.user)
+  const stats = useSelector(state => state.stats)
   const blogFormRef = useRef()
+  const match = useRouteMatch('/users/:id')
+  console.log('MATCH:', match);
+  const userMatch = match 
+    ? stats.find(el => el.user.id === match.params.id) 
+    : null
+  console.log("USER_MATCH:", userMatch);
 
-  useEffect(() => {
-    dispatch(initBlogs())  
-  }, [dispatch])
-
-  
   useEffect(() => {
     const storedUser = JSON.parse(window.localStorage.getItem('user'))
     dispatch(login(storedUser))
-  },[dispatch])
+
+    dispatch(initBlogs())
+  }, [dispatch])
 
   const handleLogin = async (userLogin) => {
     try {      
@@ -44,30 +61,8 @@ const App = () => {
     dispatch(setNotification('logged out', 'notification', 5))
   }
 
-  const handleNewBlog = async (newBlog) => {
-    try {
-        dispatch(addBlog(newBlog))
-        dispatch(setNotification(`A new blog '${newBlog.title}' by ${newBlog.author} added`, 'notification', 5))
-        blogFormRef.current.toggleVisibility()
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const handleLikesIncrease = async (blog) => {
-    try {
-      dispatch(likeBlog(blog))
-    } catch (e) {
-      console.log(e);
-    }
-  }
-
-  const handleDeleteBlog = async (blog) => {
-    try {
-      dispatch(deleteBlog(blog.id))
-    } catch (e){
-      console.log(e);
-    }
+  const toggleVisibility = async () => {
+    blogFormRef.current.toggleVisibility()
   }
 
   if (user===null){
@@ -78,23 +73,32 @@ const App = () => {
       </>)
   }
   return (
-    <div>
-      <h2>blogs</h2>
-      <Notification />
-      <p>{user.name} logged in <Logout handleLogout={handleLogout} /></p>
-      <Togglable buttonLabel='new blog' ref={blogFormRef}>
-        <BlogForm handleSubmit={handleNewBlog}/>
-      </Togglable>
-      <div id='bloglist'>
-        {blogs.map(blog =>
-          <Blog key={blog.id}
-                blog={blog}
-                handleLikes={handleLikesIncrease}
-                currentUser={user}
-                handleDelete={handleDeleteBlog} />
-        )}
+    
+      <div>
+        <h2>blogs</h2>
+        <Notification />
+        <p>{user.name} logged in <Logout handleLogout={handleLogout} /></p>
+        <Menu />
+        <Switch>
+          <Route path='/users/:id'>
+            <User data={userMatch}/>
+          </Route>
+          <Route path='/users'>
+            <UserInfo />
+          </Route>
+          <Route path='/'>
+            <Togglable buttonLabel='new blog' ref={blogFormRef}>
+              <BlogForm toggleVisibility={toggleVisibility}/>
+            </Togglable>
+            <div id='bloglist'>
+              {blogs.map(blog =>
+                <Blog key={blog.id} blog={blog}/>)
+              }
+            </div>
+          </Route>
+        </Switch>
       </div>
-    </div>
+    
   )
 }
 

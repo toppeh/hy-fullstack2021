@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react'
 import PropTypes from 'prop-types'
+import { useDispatch, useSelector } from 'react-redux'
+import { likeBlog, deleteBlog } from '../reducers/blogReducer'
 
-const Blog = ({blog, handleLikes, currentUser, handleDelete}) => {
+const Blog = ({blog}) => {
   const [ viewAll, setViewAll ] = useState(false)
-  //const [ user, setUser ] = useState({})
+  const dispatch = useDispatch()
+  const user = useSelector(state => state.user)
   
   useEffect(() => {
     //console.log("BLOG:", blog, "CURRENT_USER:", currentUser);
@@ -26,11 +29,13 @@ const Blog = ({blog, handleLikes, currentUser, handleDelete}) => {
   const changeView = () => setViewAll(!viewAll)
 
   const addLike = (event) => {
-    handleLikes(blog)
+    dispatch(likeBlog(blog))
   }
 
-  const deleteBlog = (event) => {
-    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) handleDelete(blog)
+  const removeBlog = (event) => {
+    if (window.confirm(`Remove blog ${blog.title} by ${blog.author}?`)) {
+      dispatch(deleteBlog(blog.id))
+    }
   }
 
   if (!viewAll){
@@ -43,15 +48,14 @@ const Blog = ({blog, handleLikes, currentUser, handleDelete}) => {
     )
   }
   
-  if (currentUser.username === blog.user.username) {
-    console.log("Tämä on soppa");
+  if (user.username === blog.user.username) {
     return (
       <div style={blogStyle} className='blog'>
           <div>{blog.title} {blog.author} <button onClick={changeView}>hide</button></div>
           <div>{blog.url}</div>
           <div className='likes'>likes {blog.likes} <button className='likeBtn' onClick={addLike}>like</button></div>
           <div>{blog.user.name}</div>
-          <button style={buttonStyle} onClick={deleteBlog}>remove</button>
+          <button style={buttonStyle} onClick={removeBlog}>remove</button>
       </div>
     )
   }
