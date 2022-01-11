@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react'
+import React from 'react'
 import PropTypes from 'prop-types'
 import { useDispatch, useSelector } from 'react-redux'
 import { likeBlog, deleteBlog } from '../reducers/blogReducer'
@@ -10,25 +10,6 @@ const Blog = ({blog}) => {
   const dispatch = useDispatch()
   const user = useSelector(state => state.user)
   const history = useHistory()
-
-  useEffect(() => {
-    //console.log("BLOG:", blog, "CURRENT_USER:", currentUser);
-    //setUser({...blog.user})
-    //console.log("USER:", user);
-  }, [])
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5
-  }
-
-  const buttonStyle = {
-    "backgroundColor": 'lightblue',
-  }
-
 
   const addLike = (event) => {
     dispatch(likeBlog(blog))
