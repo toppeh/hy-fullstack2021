@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import blogService from '../services/blogs'
+import { Button } from "react-bootstrap";
 
 const Comments = ({ blogId }) => {
   const [comments, setComments] = useState([])
@@ -27,7 +28,7 @@ const Comments = ({ blogId }) => {
       <div>
       <form onSubmit={postComment}>
         <input onChange={handleChange} value={newComment}></input>
-        <button>add comment</button>
+        <Button>add comment</Button>
       </form>
     </div>
       <ul>

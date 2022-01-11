@@ -2,7 +2,7 @@ import React, { useState } from 'react'
 import { useDispatch } from 'react-redux'
 import { addBlog } from '../reducers/blogReducer'
 import { setNotification } from '../reducers/notificationReducer'
-
+import { Button } from 'react-bootstrap'
 
 const BlogForm = ({ toggleVisibility }) => {
   const [blog, setBlog] = useState({
@@ -53,7 +53,7 @@ const BlogForm = ({ toggleVisibility }) => {
       <div>
         url: <input type='text' value={blog.url} name='url' id='url' onChange={handleChange}/>
         </div>
-      <button type='submit'>create</button>
+      <Button type='submit'>create</Button>
     </form>
   )
 }

@@ -26,3 +26,7 @@
   border-width: 1px;
   margin-bottom: 5px;
 }
+
+body {
+  background-image: url('./bg.png')
+}

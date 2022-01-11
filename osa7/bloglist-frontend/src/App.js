@@ -1,4 +1,4 @@
-import React, { useEffect, useRef } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { useDispatch, useSelector } from 'react-redux'
 import Blog from './components/Blog'
 import LoginForm from './components/Login'
@@ -17,6 +17,8 @@ import {
 import Menu from './components/Menu'
 import UserInfo from './components/UserInfo'
 import User from './components/User'
+import Table from 'react-bootstrap/Table'
+import Logout from './components/Logout'
 
 const App = () => {
   const dispatch = useDispatch()
@@ -66,9 +68,12 @@ const App = () => {
       </>)
   }
   return (
-      <div>
+      <div className='container' id='bg'>
         <Menu />
-        <h2>blog app</h2>
+        {user
+        ? <strong><em>{user.username} logged in <Logout /></em></strong>
+        : <Link to="/login">login</Link>}
+
         <Notification />
         <Switch>
           <Route path='/users/:id'>
@@ -84,11 +89,14 @@ const App = () => {
             <Togglable buttonLabel='new blog' ref={blogFormRef}>
               <BlogForm toggleVisibility={toggleVisibility}/>
             </Togglable>
-              {blogs.map(blog =>
-                <div key={blog.id} className='blogList'>
-                  <Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link>
-               </div>)
-              }
+              <Table striped bordered variant="dark">
+                <tbody>
+                  {blogs.map(blog =>
+                  <tr key={blog.id} >
+                    <td><Link to={`/blogs/${blog.id}`}>{blog.title} {blog.author}</Link></td>
+                  </tr>)}
+                </tbody>
+              </Table>
           </Route>
         </Switch>
       </div>
