@@ -1,5 +1,24 @@
-const { ApolloServer, gql } = require('apollo-server')
+const { ApolloServer, gql, UserInputError } = require('apollo-server')
 const { v1: uuid } = require('uuid')
+const mongoose = require('mongoose')
+const Author = require('./models/Author')
+const Book = require('./models/Book')
+const User = require('./models/User')
+const resolvers = require('./resolvers')
+const jsonwebtoken = require('jsonwebtoken')
+require('dotenv').config()
+const jwt = require('jsonwebtoken')
+
+const MONGO_URI = process.env.DB_URI 
+
+console.log('connecting to', MONGO_URI);
+mongoose.connect(MONGO_URI)
+  .then(() => {
+    console.log("connected to mongodb")
+  })
+  .catch((errir) => {
+    console.log("error connecting to mongodb:", error)
+  })
 
 let authors = [
   {
@@ -95,16 +114,27 @@ const typeDefs = gql`
   type Book {
     title: String!
     published: Int!
-    author: String!
+    author: Author!
+    genres: [String!]!
     id: ID!
-    genres: [String]!
   }
   
+  type User {
+  username: String!
+  favoriteGenre: String!
+  id: ID!
+  }
+
+  type Token {
+    value: String!
+  }
+
   type Query {
     bookCount: Int!
     authorCount: Int!
     allBooks(author: String, genre: String): [Book]!
     allAuthors: [Author!]!
+    me: User
   }
 
   type Mutation {
@@ -112,75 +142,45 @@ const typeDefs = gql`
       title: String!
       published: Int!
       author: String!
-      id: ID
       genres: [String]!
     ): Book,
     editAuthor(
       name: String!
       setBornTo: Int!
-    ): Author
+    ): Author,
+    createUser(
+      username: String!
+      favoriteGenre: String!
+    ): User,
+    login(
+      username: String!
+      password: String!
+    ): Token
   }
 `
-
-const resolvers = {
-  Query: {
-    bookCount: () => books.length,
-    authorCount: () => authors.length,
-    allBooks: (root, args) => {
-      const afterAuthorFiltering = !args.author 
-        ? books 
-        : books.filter(book => book.author === args.author)
-      const afterGenreFiltering = !args.genre
-        ? afterAuthorFiltering
-        : afterAuthorFiltering.filter(book => 
-          book.genres.find(genre => genre === args.genre))
-      return afterGenreFiltering
-    },
-    allAuthors: () => authors
-  },
-  Author: {
-    bookCount: (root) => {
-      const reducer = (prev, cur) => {
-        if (root.name === cur.author){
-          prev = prev+1
-        }
-        return prev
-      }
-      const writtenBooks = books.reduce(reducer, 0)
-      return writtenBooks
-    }
-  },
-  Mutation: {
-    addBook: (root, args) => {
-      const book = { ...args, id: uuid() }
-      books = books.concat(book)
-      // Check if author exists
-      if (! authors.find(author => author.name === args.author)){
-        const author = {
-          name: args.author,
-          id: uuid()
-        }
-        authors = authors.concat(author)
-      }
-      return book
-    },
-    editAuthor: (root, args) => {
-      const author = authors.find(author => author.name === args.name) 
-      if (!author){
-        return null
-      }
-      const editedAuthor = {...author, born: args.setBornTo}
-      authors = authors.map(a => a.name === args.name
-        ? editedAuthor
-        : a)
-      return editedAuthor
-    }
-  }
-}
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  context: async ({ req }) => {
+    const auth = req
+    ? req.headers.authorization
+    : null
+    if (auth && auth.toLowerCase().startsWith('bearer ')) {
+      try {
+      const decodedToken = jwt.verify(
+        auth.substring(7),
+        process.env.JSON_SECRET)
+      
+        const currentUser = await User
+          .findById(decodedToken.id)
+          //.populate('friends')
+        return { currentUser }
+      } catch (error){
+        console.log("authorization failed");
+      }
+    }  
+  }
 })
 
 server.listen().then(({ url }) => {

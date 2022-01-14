@@ -2,7 +2,7 @@
   "name": "kirjasto-graphql",
   "version": "1.0.0",
   "description": "",
-  "main": "library-backend.js",
+  "main": "./src/library-backend.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "dev": "nodemon ./src/library-backend.js"
@@ -11,7 +11,11 @@
   "license": "ISC",
   "dependencies": {
     "apollo-server": "^3.6.1",
+    "dotenv": "^11.0.0",
     "graphql": "^16.2.0",
+    "jsonwebtoken": "^8.5.1",
+    "mongoose": "^6.1.6",
+    "mongoose-unique-validator": "^3.0.0",
     "uuid": "^8.3.2"
   },
   "devDependencies": {
