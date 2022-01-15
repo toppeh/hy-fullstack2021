@@ -48,6 +48,7 @@ const resolvers = {
       const book = new Book({ ...args, author: author._id })
       try { 
         await book.save()
+        await Book.populate(book, {path: 'author'})
         return book
       } 
       catch (error) {

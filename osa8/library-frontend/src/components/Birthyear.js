@@ -6,9 +6,23 @@ const Birthyear = ({ show, authors }) => {
   const [author, setAuthor] = useState("")
   const [year, setYear] = useState("")
   const [setBirthyear] = useMutation(UPDATE_BIRTHYEAR, {
-    refetchQueries: [ ALL_AUTHORS ],
+    //refetchQueries: [ ALL_AUTHORS ],
     onError: (error) => {
       console.log(error);
+    },
+    update: (store, response) => {
+      const dataInStore = store.readQuery({ query: ALL_AUTHORS })
+      const updatedAuthors = dataInStore.allAuthors.map((author) => 
+        author.id === response.data.editAuthor.id
+        ? response.data.editAuthor
+        : author)
+      store.writeQuery({
+        query: ALL_AUTHORS,
+        data: {
+          ...dataInStore,          
+          allAuthors: updatedAuthors 
+        }      
+      })
     }
   })
 
