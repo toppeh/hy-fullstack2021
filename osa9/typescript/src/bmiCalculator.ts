@@ -1,16 +1,16 @@
-const calculateBmi = (height: number, weight: number): string => {
-  const bmi: number = weight/(height/100)/(height/100)
+export const calculateBmi = (height: number, weight: number): string => {
+  const bmi: number = weight/(height/100)/(height/100);
   if (bmi >= 30) {
-    return "Obese";
+    return 'Obese';
   } else if (bmi >= 25) {
-    return "Overweight";
+    return 'Overweight';
   } else if (bmi >= 18.5) {
-    return "Normal (Healthy)";
+    return 'Normal (Healthy)';
   } else {
-    return "Underweight";
+    return 'Underweight';
   }
-}
-
+};
+/*
 interface BmiValues {
   height: number;
   weight: number;
@@ -41,4 +41,4 @@ try {
     errorMessage += ' Error: ' + error.message;
   }
   console.log(errorMessage);
-}
+}*/
