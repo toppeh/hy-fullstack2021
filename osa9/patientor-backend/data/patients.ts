@@ -47,6 +47,7 @@ const data = [
 const patientsData: Patient [] = data.map(obj => {
     const object = validateNewPatient(obj) as Patient;
     object.id = obj.id;
+    object.entries = [];
     return object;
   });
   
