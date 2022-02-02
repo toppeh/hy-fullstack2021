@@ -1,18 +1,17 @@
 import React from "react";
-import { Course } from '../types'
+import { CoursePart } from '../types';
+import { Part } from './Part';
 
 interface ContentProps {
-  courses: Course[]
+  courses: CoursePart[]
 }
 
 export const Content = (props: ContentProps) => {
   return (
     <div>
       {props.courses.map(
-        (course: Course) => 
-        <p key={course.name}>
-          {course.name} {course.exerciseCount}
-        </p>
+        (course: CoursePart) => 
+          <Part key={course.name} course={course} />
       )}
     </div>
   )
