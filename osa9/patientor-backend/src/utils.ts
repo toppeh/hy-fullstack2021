@@ -7,7 +7,8 @@ export const validateNewPatient = (obj: any): NewPatient => {
     dateOfBirth: parseDate(obj.dateOfBirth),
     ssn: parseSsn(obj.ssn),
     gender: parseGender(obj.gender),
-    occupation: parseOccupation(obj.occupation)
+    occupation: parseOccupation(obj.occupation),
+    entries: []
   };
   return newPatient;
 };
